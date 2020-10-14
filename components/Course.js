@@ -28,7 +28,7 @@ const Course = (props) => {
           ></View>
         </View>
       </View>
-      <Button text="Continue" border={[0, 0, 16, 16]} />
+      <Button text="Continue" border={[0, 0, 16, 16]} onPress={props.onPress} />
     </Card>
   );
 };

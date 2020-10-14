@@ -1,10 +1,27 @@
 import React from "react";
 
 import { Text, View, StyleSheet, FlatList } from "react-native";
-import Card from "../components/Card";
 import Course from "../components/Course";
 const types = ["My Courses", "My Webinars", "Continue Reading"];
 const HomeScreen = (props) => {
+  const pressHandler = (item) => {
+    if (item === "My Courses") {
+      props.navigation.navigate("Search", {
+        screen: "Details",
+        params: {
+          id: 1,
+        },
+      });
+    } else if (item === "My Webinars") {
+      props.navigation.navigate("Search", {
+        screen: "Webinar",
+      });
+    } else {
+      props.navigation.navigate("Search", {
+        screen: "Blog",
+      });
+    }
+  };
   return (
     <View style={styles.wrapper}>
       <FlatList
@@ -13,7 +30,11 @@ const HomeScreen = (props) => {
         renderItem={({ item }) => (
           <View style={styles.courseWrapper}>
             <Text style={styles.text}>{item}</Text>
-            <Course percentage={75} title="Introduction to React native" />
+            <Course
+              percentage={75}
+              title="Introduction to React native"
+              onPress={() => pressHandler(item)}
+            />
           </View>
         )}
         style={{ width: "100%", flex: 1 }}

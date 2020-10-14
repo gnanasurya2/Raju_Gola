@@ -1,11 +1,17 @@
 import React from "react";
 
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import PropTypes from "prop-types";
 import Colors from "../constants/Colors";
 const Button = (props) => {
   return (
-    <TouchableOpacity onPress={() => console.log("pressed")}>
+    <TouchableOpacity onPress={props.onPress} disabled={props.loading}>
       <View
         style={[
           styles.wrapper,
@@ -17,9 +23,14 @@ const Button = (props) => {
                 borderBottomLeftRadius: props.border[3],
               }
             : { borderRadius: props.border[0] },
+          props.style,
         ]}
       >
-        <Text style={styles.text}>{props.text}</Text>
+        {props.loading ? (
+          <ActivityIndicator size="large" color="blue" />
+        ) : (
+          <Text style={styles.text}>{props.text}</Text>
+        )}
       </View>
     </TouchableOpacity>
   );

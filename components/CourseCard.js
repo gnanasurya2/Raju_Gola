@@ -1,26 +1,28 @@
 import React from "react";
 
-import { Text, StyleSheet, Image } from "react-native";
+import { Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Card from "./Card";
 const CourseCard = (props) => {
   return (
-    <Card
-      style={{
-        height: 120,
-        alignSelf: "center",
-        width: "100%",
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <Image
-        source={{
-          uri: props.url,
+    <TouchableOpacity onPress={props.onPress}>
+      <Card
+        style={{
+          height: 120,
+          alignSelf: "center",
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
         }}
-        style={styles.image}
-      />
-      <Text style={styles.text}>{props.title}</Text>
-    </Card>
+      >
+        <Image
+          source={{
+            uri: props.url,
+          }}
+          style={styles.image}
+        />
+        <Text style={styles.text}>{props.title}</Text>
+      </Card>
+    </TouchableOpacity>
   );
 };
 

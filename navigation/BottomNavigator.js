@@ -2,11 +2,11 @@ import * as React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Colors from "../constants/Colors";
 import HomeScreen from "../Screens/HomeScreen";
-import SearchScreen from "../Screens/SearchScreen";
 import WebinarScreen from "../Screens/WebinarScreen";
 import LeaderboardScreen from "../Screens/LeaderboardScreen";
-import SettingScreen from "../Screens/SettingScreen";
+import SettingNavigator from "./SettingNavigator";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import CourseNavigator from "./CourseNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,10 +20,11 @@ const BottomNavigator = () => {
         inactiveBackgroundColor: Colors.primaryColor,
         inactiveTintColor: "white",
         keyboardHidesTabBar: true,
+        labelPosition: "below-icon",
       }}
     >
       <Tab.Screen
-        component={SearchScreen}
+        component={CourseNavigator}
         name="Search"
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -67,7 +68,7 @@ const BottomNavigator = () => {
         }}
       />
       <Tab.Screen
-        component={SettingScreen}
+        component={SettingNavigator}
         name="Setting"
         options={{
           tabBarIcon: ({ color, size }) => (
