@@ -1,32 +1,33 @@
 import React from "react";
 
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { addCourse } from "../database/database";
 import Button from "../components/Button";
+import * as Linking from "expo-linking";
 
 const WebinarDetailsScreen = (props) => {
+  const { data } = props.route.params;
   const payHandler = () => {
-    props.navigation.navigate("Pay");
+    addCourse(data.type, data.title, data.id);
+    Linking.openURL(data.data);
   };
   return (
-    <View style={styles.wrapper}>
+    <ScrollView style={styles.wrapper}>
       <Image
         source={{
-          uri: "https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg",
+          uri: data.url,
         }}
         style={styles.image}
       />
-      <Text style={styles.text}>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta ad
-        consequuntur perferendis exercitationem repellendus assumenda?
-      </Text>
+      <Text style={styles.text}>{data.description}</Text>
       <View style={styles.container}>
         <MaterialCommunityIcons name="timer" size={32} color="#B6B6B6" />
-        <Text style={styles.timeText}>1 hour</Text>
+        <Text style={styles.timeText}>{data.time} hour</Text>
       </View>
       <Button
         border={[30]}
-        text="pay ₹200"
+        text={`pay ₹${data.price}`}
         style={{
           backgroundColor: "green",
           width: 160,
@@ -35,7 +36,7 @@ const WebinarDetailsScreen = (props) => {
         }}
         onPress={payHandler}
       />
-    </View>
+    </ScrollView>
   );
 };
 

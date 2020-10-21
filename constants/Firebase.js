@@ -3,13 +3,14 @@ import "firebase/auth";
 import "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBsDAYgMM7o4i__zo29tgCGOotWh1c0V5s",
-  authDomain: "chat-ecfd3.firebaseapp.com",
-  databaseURL: "https://chat-ecfd3.firebaseio.com",
-  projectId: "chat-ecfd3",
-  storageBucket: "chat-ecfd3.appspot.com",
-  messagingSenderId: "259436925573",
-  appId: "1:259436925573:web:4adbe77391125fc8",
+  apiKey: "AIzaSyCBAHGr1lS1FHtYfvXiawK9iSHkkfDbm8w",
+  authDomain: "raju-gola.firebaseapp.com",
+  databaseURL: "https://raju-gola.firebaseio.com",
+  projectId: "raju-gola",
+  storageBucket: "raju-gola.appspot.com",
+  messagingSenderId: "316858198192",
+  appId: "1:316858198192:web:0e3f49e35a34fc11213375",
+  measurementId: "G-K3NJ3MK54Q",
 };
 
 const firebase = Firebase.initializeApp(firebaseConfig);

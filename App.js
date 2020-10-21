@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import MainNavigator from "./navigation/MainNavigator";
 import { AuthProvider } from "./Context/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
-import { init, contentInit, dropTable } from "./database/database";
+import { init, contentInit, dropTable, FetchCourse } from "./database/database";
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -11,7 +11,6 @@ export default function App() {
     const loading = async () => {
       if (!ready) {
         await SplashScreen.preventAutoHideAsync();
-        // await dropTable("content");
         await init().catch((e) => console.log(e));
         await contentInit((e) => console.log(e));
         setReady(true);

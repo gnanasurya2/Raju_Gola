@@ -44,6 +44,7 @@ const LeaderboardScreen = (props) => {
     <View style={styles.wrapper}>
       <FlatList
         data={data}
+        keyExtractor={(item) => item.name}
         renderItem={({ item, index }) => (
           <Leader url={item.url} name={item.name} number={index + 1} />
         )}

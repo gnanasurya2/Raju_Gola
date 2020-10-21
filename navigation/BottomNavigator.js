@@ -31,6 +31,14 @@ const BottomNavigator = () => {
             <MaterialCommunityIcons name="magnify" size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            console.log("inside");
+            navigation.navigate("Search", {
+              screen: "Search",
+            });
+          },
+        })}
       />
       <Tab.Screen
         component={WebinarScreen}

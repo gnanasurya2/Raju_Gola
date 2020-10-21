@@ -30,21 +30,25 @@ const Video = (props) => {
   const changeHandler = (event) => {
     if (event === "ended") {
       props.ended();
+    } else if (event === "unstarted") {
+      props.unstarted();
     }
   };
   return (
     <View style={styles.container}>
       <View style={styles.bar}></View>
-      <YoutubePlayer
-        height={300}
-        play={true}
-        videoId={props.videoId}
-        webViewStyle={{ position: "relative", zIndex: 0 }}
-        onFullScreenChange={orientationChange}
-        onChangeState={changeHandler}
-        ref={props.playerRef}
-        play={false}
-      />
+      {props.videoId ? (
+        <YoutubePlayer
+          height={300}
+          play={true}
+          videoId={props.videoId}
+          webViewStyle={{ position: "relative", zIndex: 0 }}
+          onFullScreenChange={orientationChange}
+          onChangeState={changeHandler}
+          ref={props.playerRef}
+          play={false}
+        />
+      ) : null}
     </View>
   );
 };

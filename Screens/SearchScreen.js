@@ -1,27 +1,39 @@
 import React, { useState, useEffect } from "react";
 
-import { Text, ScrollView, View, StyleSheet } from "react-native";
+import {
+  Text,
+  ScrollView,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import Search from "../components/Search";
 import CourseCard from "../components/CourseCard";
 import firebase from "../constants/Firebase";
 
 const SearchScreen = (props) => {
-  const [data, setData] = useState(null);
-  useEffect(() => console.log(data), [data]);
-  useEffect(() => {
-    console.log({ data });
-    if (data === null || !data.length) {
-      const course = [];
-      firebase
-        .firestore()
-        .collection("Content")
-        .orderBy("type")
-        .limit(3)
-        .get()
-        .then((query) => {
-          query.forEach((doc) => course.push({ ...doc.data(), id: doc.id }));
-          setData(course);
+  const [data, setData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [searchData, setSearchData] = useState([]);
+
+  const dataExtractor = (type) => {
+    firebase
+      .firestore()
+      .collection("Content")
+      .where("type", "==", type)
+      .limit(1)
+      .get()
+      .then((query) => {
+        query.forEach((doc) => {
+          setData((state) => [...state, { ...doc.data(), id: doc.id }]);
         });
+      });
+  };
+  useEffect(() => {
+    if (data === null || !data.length) {
+      dataExtractor("course");
+      dataExtractor("webinar");
+      dataExtractor("blog");
     }
   }, []);
   const clickHandler = (ele) => {
@@ -31,18 +43,20 @@ const SearchScreen = (props) => {
       });
     } else if (ele.type === "webinar") {
       props.navigation.navigate("Webinar", {
-        screen: "Webinar",
+        data: ele,
       });
     } else {
-      props.navigation.navigate("Blog", {
-        screen: "Blog",
-      });
+      props.navigation.navigate("Blog", { data: ele });
     }
+  };
+  const searchHandler = (text) => {
+    setSearchText(text);
+    firebase.firestore().collection("Content").orderBy("title").startAt(text);
   };
   return (
     <ScrollView style={styles.wrapper}>
-      <Search />
-      {data ? (
+      <Search value={searchText} onChangeText={searchHandler} />
+      {data.length ? (
         <>
           <View style={styles.container}>
             <Text style={styles.text}>Latest Courses:</Text>
@@ -58,22 +72,32 @@ const SearchScreen = (props) => {
           </View>
           <View style={styles.container}>
             <Text style={styles.text}>Latest Webinars:</Text>
-            <CourseCard
-              url="https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg"
-              title="How to make a website"
-              onPress={() => clickHandler("webinar")}
-            />
+            {data
+              .filter((ele) => ele.type === "webinar")
+              .map((ele) => (
+                <CourseCard
+                  url={ele.url}
+                  title={ele.title}
+                  onPress={() => clickHandler(ele)}
+                />
+              ))}
           </View>
           <View style={styles.container}>
             <Text style={styles.text}>Latest Blogs:</Text>
-            <CourseCard
-              url="https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg"
-              title="Getting started with React"
-              onPress={() => clickHandler("Blog")}
-            />
+            {data
+              .filter((ele) => ele.type === "blog")
+              .map((ele) => (
+                <CourseCard
+                  url={ele.url}
+                  title={ele.title}
+                  onPress={() => clickHandler(ele)}
+                />
+              ))}
           </View>
         </>
-      ) : null}
+      ) : (
+        <ActivityIndicator size="large" color="blue" />
+      )}
     </ScrollView>
   );
 };

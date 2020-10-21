@@ -2,6 +2,7 @@ import React from "react";
 
 import { Text, View, StyleSheet, Modal } from "react-native";
 import Button from "./Button";
+import PropTypes from "prop-types";
 const Modals = (props) => {
   return (
     <Modal animationType="fade" visible={props.visible} transparent={true}>
@@ -45,4 +46,9 @@ const styles = new StyleSheet.create({
   },
 });
 
+Modals.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  toggleModal: PropTypes.func.isRequired,
+};
 export default Modals;

@@ -22,7 +22,7 @@ const queryHelper = (query, args) => {
 
 export const init = () =>
   queryHelper(
-    "CREATE TABLE IF NOT EXISTS course (id INTEGER PRIMARY KEY NOT NULL,type TEXT NOT NULL,title TEXT NOT NULL,courseId INTEGER NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS course (id INTEGER PRIMARY KEY NOT NULL,type TEXT NOT NULL,title TEXT NOT NULL,courseId INTEGER NOT NULL,percentageCompleted INTEGER NOT NULL)",
     []
   );
 export const contentInit = () =>
@@ -30,13 +30,17 @@ export const contentInit = () =>
     "CREATE TABLE IF NOT EXISTS content (id INTEGER PRIMARY KEY NOT NULL,courseId INTEGER NOT NULL,videoId INTEGER NOT NULL,name INTEGER NOT NULL,timeRemaining INTEGER,completed INTEGER NOT NULL)",
     []
   );
+export const blogInit = () =>
+  queryHelper(
+    "CREATE TABLE IF NOT EXISTS blog (id INTEGER PRIMARY KEY NOT NULL,courseId INTEGER NOT NULL,title TEXT NOT NULL,data TEXT NOT NULL)",
+    []
+  );
 
 export const addCourse = (type, title, courseId) =>
-  queryHelper("INSERT INTO course (type,title,courseId) VALUES(?,?,?)", [
-    type,
-    title,
-    courseId,
-  ]);
+  queryHelper(
+    "INSERT INTO course (type,title,courseId,percentageCompleted) VALUES(?,?,?,?)",
+    [type, title, courseId, 0]
+  );
 
 export const FetchCourse = () => queryHelper("SELECT * FROM course", []);
 
@@ -48,10 +52,20 @@ export const AddContent = (courseId, videoId, name, timeRemaining, completed) =>
     "INSERT INTO content (courseId,videoId,name,timeRemaining,completed) VALUES(?,?,?,?,?)",
     [courseId, videoId, name, timeRemaining, completed]
   );
-
+export const updateCourse = (percentage, id) =>
+  queryHelper(
+    `UPDATE course SET percentageCompleted = ${percentage} WHERE courseId = ${id}`
+  );
 export const updateContent = (id, timeRemaining, completed) =>
   queryHelper(
     `UPDATE content SET timeRemaining = ${timeRemaining},completed = ${completed} WHERE id = ${id}`
   );
 
 export const dropTable = (name) => queryHelper(`DROP TABLE ${name}`, []);
+
+export const addBlog = (courseId, title, data) =>
+  queryHelper(`INSERT INTO blog (courseId,title,data) VALUES(?,?,?)`, [
+    courseId,
+    title,
+    data,
+  ]);

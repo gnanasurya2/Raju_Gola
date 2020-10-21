@@ -27,7 +27,10 @@ const Button = (props) => {
         ]}
       >
         {props.loading ? (
-          <ActivityIndicator size="large" color="blue" />
+          <ActivityIndicator
+            size="large"
+            color={props.color ? props.color : "blue"}
+          />
         ) : (
           <Text style={styles.text}>{props.text}</Text>
         )}

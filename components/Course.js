@@ -12,6 +12,7 @@ const Course = (props) => {
         flexDirection: "column",
         justifyContent: "space-between",
         marginVertical: 24,
+        ...props.style,
       }}
     >
       <Text style={styles.text}>{props.title}</Text>

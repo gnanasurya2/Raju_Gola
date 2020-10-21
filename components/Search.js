@@ -2,7 +2,14 @@ import React from "react";
 
 import { TextInput, StyleSheet } from "react-native";
 const Search = (props) => {
-  return <TextInput style={styles.wrapper} placeholder="Search" />;
+  return (
+    <TextInput
+      style={styles.wrapper}
+      placeholder="Search"
+      value={props.value}
+      onChangeText={props.onChangeText}
+    />
+  );
 };
 
 const styles = new StyleSheet.create({

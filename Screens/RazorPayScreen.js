@@ -3,15 +3,22 @@ import React, { useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import Button from "../components/Button";
 import { PaymentsStripe as Stripe } from "expo-payments-stripe";
+import { addCourse } from "../database/database";
 
 Stripe.setOptionsAsync({
   publishableKey:
     "pk_test_51HZhSxJ4AheT715GJTgr904UnyyionRtuoUVMnkmZM77B0oEqbyWqceJ9bNMjAStbQn5BzEWsokknThAaKiTdZ6g00fAGFpzat",
 });
 const RazorPayScreen = (props) => {
+  const params = props.route.params;
+  useEffect(() => {
+    console.log({ params });
+  }, []);
   const clickHanlder = () => {
+    addCourse(params.type, params.title, params.id);
     props.navigation.navigate("Details", {
-      ...props.route.params,
+      value: params.data,
+      id: params.id,
     });
   };
   return (

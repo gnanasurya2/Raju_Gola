@@ -96,6 +96,7 @@ export const AuthProvider = ({ children }) => {
               .doc(data.email)
               .set({
                 email: data.email,
+                amount: 0,
               })
               .then(() => {
                 dispatch({ type: "SIGN_UP" });

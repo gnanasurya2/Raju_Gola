@@ -1,19 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Text, ScrollView, StyleSheet, Image, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Button from "../components/Button";
+import Modals from "../components/Modal";
+import firebase from "../constants/Firebase";
+import { addCourse } from "../database/database";
 
 const CourseScreen = (props) => {
   const { data } = props.route.params;
-  const paymentHandler = () => {
-    props.navigation.navigate("Pay", {
-      value: data.data,
-      id: data.id,
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const paymentHandler = async () => {
+    setLoading(true);
+    let amount,
+      email = firebase.auth().currentUser.email;
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(email)
+      .get()
+      .then((doc) => {
+        amount = doc.data().amount;
+      });
+    if (amount < data.price) {
+      setVisible(true);
+    } else {
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(email)
+        .update({
+          amount: amount - data.price,
+        });
+      console.log(amount);
+      setLoading(false);
+      addCourse(data.type, data.title, data.id);
+      props.navigation.navigate("Details", {
+        value: data.data,
+        id: data.id,
+      });
+    }
+  };
+  const toggleHandler = () => {
+    props.navigation.navigate("Setting", {
+      screen: "Wallet",
     });
+    setVisible(false);
   };
   return (
     <ScrollView style={styles.wrapper}>
+      <Modals
+        title="sufficient amount is not available"
+        visible={visible}
+        toggleModal={toggleHandler}
+      />
       <Image
         source={{
           uri: data.url,
@@ -37,6 +79,7 @@ const CourseScreen = (props) => {
         style={{ backgroundColor: "green", width: 200, alignSelf: "center" }}
         text={`Pay ₹${data.price}`}
         onPress={paymentHandler}
+        loading={loading}
       />
     </ScrollView>
   );

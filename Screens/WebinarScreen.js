@@ -1,14 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { Text, ScrollView, StyleSheet } from "react-native";
+import { Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
+import Firebase from "../constants/Firebase";
 import Webinar from "../components/Webinar";
 const WebinarScreen = (props) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    if (!data) {
+      Firebase.firestore()
+        .collection("Content")
+        .where("type", "==", "webinar")
+        .get()
+        .then((querySnapshot) => {
+          const arr = [];
+          querySnapshot.forEach((doc) => {
+            arr.push({ ...doc.data(), id: doc.id });
+          });
+          setData(arr);
+        });
+    }
+  }, []);
+
+  const clickHandler = (ele) => {
+    props.navigation.navigate("Search", {
+      screen: "Webinar",
+      params: {
+        data: ele,
+      },
+    });
+  };
   return (
     <ScrollView style={styles.wrapper}>
-      <Webinar url="https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg" />
-      <Webinar url="https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg" />
-      <Webinar url="https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg" />
-      <Webinar url="https://img-a.udemycdn.com/course/750x422/2302384_7758.jpg" />
+      {data ? (
+        data.map((ele) => (
+          <Webinar url={ele.url} onPress={() => clickHandler(ele)} />
+        ))
+      ) : (
+        <ActivityIndicator size="large" color="blue" />
+      )}
     </ScrollView>
   );
 };

@@ -8,7 +8,7 @@ const Webinar = (props) => {
   return (
     <Card style={styles.wrapper}>
       <Image source={{ uri: props.url }} style={styles.image} />
-      <Button border={[0, 0, 16, 16]} text="Start" />
+      <Button border={[0, 0, 16, 16]} text="Start" onPress={props.onPress} />
     </Card>
   );
 };
