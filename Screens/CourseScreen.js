@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Text, ScrollView, StyleSheet, Image, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -34,7 +34,6 @@ const CourseScreen = (props) => {
         .update({
           amount: amount - data.price,
         });
-      console.log(amount);
       setLoading(false);
       addCourse(data.type, data.title, data.id);
       props.navigation.navigate("Details", {

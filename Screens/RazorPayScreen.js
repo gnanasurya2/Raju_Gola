@@ -11,9 +11,7 @@ Stripe.setOptionsAsync({
 });
 const RazorPayScreen = (props) => {
   const params = props.route.params;
-  useEffect(() => {
-    console.log({ params });
-  }, []);
+
   const clickHanlder = () => {
     addCourse(params.type, params.title, params.id);
     props.navigation.navigate("Details", {

@@ -13,20 +13,7 @@ const Video = (props) => {
     }
   };
   const playerRef = useRef();
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log("interval");
-    }, 1000);
-    return clearInterval(interval);
-  }, []);
-  useEffect(() => {
-    return async () => {
-      console.log("exit");
-      await playerRef.current
-        ?.getCurrentTime()
-        .then((currentTime) => console.log({ currentTime }));
-    };
-  }, []);
+
   const changeHandler = (event) => {
     if (event === "ended") {
       props.ended();

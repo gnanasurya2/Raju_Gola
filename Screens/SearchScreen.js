@@ -7,28 +7,27 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import Search from "../components/Search";
 import CourseCard from "../components/CourseCard";
 import firebase from "../constants/Firebase";
-
+import { FetchContent, fetchWebinar } from "../database/database";
 const SearchScreen = (props) => {
   const [data, setData] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [searchData, setSearchData] = useState([]);
-
+  const [loaded, setLoaded] = useState([false, false, false]);
   const dataExtractor = (type) => {
     firebase
       .firestore()
       .collection("Content")
+      .orderBy("id", "desc")
       .where("type", "==", type)
       .limit(1)
       .get()
       .then((query) => {
         query.forEach((doc) => {
-          setData((state) => [...state, { ...doc.data(), id: doc.id }]);
+          setData((state) => [...state, [{ ...doc.data(), id: doc.id }]]);
         });
       });
   };
+
   useEffect(() => {
     if (data === null || !data.length) {
       dataExtractor("course");
@@ -36,63 +35,123 @@ const SearchScreen = (props) => {
       dataExtractor("blog");
     }
   }, []);
+  function formatDateTime(input) {
+    var epoch = new Date(0);
+    epoch.setSeconds(parseInt(input));
+    var date = epoch.toISOString();
+    date = date.replace("T", " ");
+    return (
+      date.split(".")[0].split(" ")[0] +
+      " " +
+      epoch.toLocaleTimeString().split(" ")[0]
+    );
+  }
   const clickHandler = (ele) => {
     if (ele.type === "course") {
-      props.navigation.navigate("Course", {
-        data: ele,
+      FetchContent(ele.id).then((docs) => {
+        if (docs.rows._array.length) {
+          props.navigation.navigate("Details", {
+            id: ele.id,
+          });
+        } else {
+          props.navigation.navigate("Course", {
+            data: ele,
+          });
+        }
       });
     } else if (ele.type === "webinar") {
-      props.navigation.navigate("Webinar", {
-        data: ele,
+      fetchWebinar(ele.id).then((docs) => {
+        let bought = false,
+          date = formatDateTime(ele.date.seconds),
+          final = { ...ele };
+        final["date"] = date;
+        if (docs.rows._array.length) {
+          bought = true;
+        }
+        props.navigation.navigate("Webinar", {
+          data: final,
+          bought: bought,
+        });
       });
     } else {
       props.navigation.navigate("Blog", { data: ele });
     }
   };
-  const searchHandler = (text) => {
-    setSearchText(text);
-    firebase.firestore().collection("Content").orderBy("title").startAt(text);
+  const loadText = (type, index) => {
+    firebase
+      .firestore()
+      .collection("Content")
+      .orderBy("id", "desc")
+      .where("type", "==", type)
+      .limit(7)
+      .get()
+      .then((docs) => {
+        let newData = [];
+        docs.forEach((doc) => {
+          newData.push(doc.data());
+        });
+        let updatedData = [...data];
+        updatedData[index] = newData;
+        setData(updatedData);
+      });
+    let updatedLoaded = [...loaded];
+    updatedLoaded[index] = true;
+    setLoaded(updatedLoaded);
   };
   return (
     <ScrollView style={styles.wrapper}>
-      <Search value={searchText} onChangeText={searchHandler} />
-      {data.length ? (
+      {data.length === 3 ? (
         <>
           <View style={styles.container}>
             <Text style={styles.text}>Latest Courses:</Text>
-            {data
-              .filter((ele) => ele.type === "course")
-              .map((ele) => (
-                <CourseCard
-                  url={ele.url}
-                  title={ele.title}
-                  onPress={() => clickHandler(ele)}
-                />
-              ))}
+            {data[0].map((ele) => (
+              <CourseCard
+                url={ele.url}
+                title={ele.title}
+                onPress={() => clickHandler(ele)}
+              />
+            ))}
+            {loaded[0] ? null : (
+              <Text
+                style={styles.loadText}
+                onPress={() => loadText("course", 0)}
+              >
+                Load More...
+              </Text>
+            )}
           </View>
           <View style={styles.container}>
             <Text style={styles.text}>Latest Webinars:</Text>
-            {data
-              .filter((ele) => ele.type === "webinar")
-              .map((ele) => (
-                <CourseCard
-                  url={ele.url}
-                  title={ele.title}
-                  onPress={() => clickHandler(ele)}
-                />
-              ))}
+            {data[1].map((ele) => (
+              <CourseCard
+                url={ele.url}
+                title={ele.title}
+                onPress={() => clickHandler(ele)}
+              />
+            ))}
+            {loaded[1] ? null : (
+              <Text
+                style={styles.loadText}
+                onPress={() => loadText("webinar", 1)}
+              >
+                Load More...
+              </Text>
+            )}
           </View>
           <View style={styles.container}>
             <Text style={styles.text}>Latest Blogs:</Text>
-            {data
-              .filter((ele) => ele.type === "blog")
-              .map((ele) => (
-                <CourseCard
-                  url={ele.url}
-                  title={ele.title}
-                  onPress={() => clickHandler(ele)}
-                />
-              ))}
+            {data[2].map((ele) => (
+              <CourseCard
+                url={ele.url}
+                title={ele.title}
+                onPress={() => clickHandler(ele)}
+              />
+            ))}
+            {loaded[2] ? null : (
+              <Text style={styles.loadText} onPress={() => loadText("blog", 2)}>
+                Load More...
+              </Text>
+            )}
           </View>
         </>
       ) : (
@@ -114,6 +173,12 @@ const styles = new StyleSheet.create({
   text: {
     marginVertical: 24,
     fontSize: 24,
+  },
+  loadText: {
+    fontSize: 16,
+    color: "blue",
+    fontWeight: "bold",
+    marginTop: 8,
   },
 });
 

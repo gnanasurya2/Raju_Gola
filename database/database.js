@@ -30,6 +30,19 @@ export const contentInit = () =>
     "CREATE TABLE IF NOT EXISTS content (id INTEGER PRIMARY KEY NOT NULL,courseId INTEGER NOT NULL,videoId INTEGER NOT NULL,name INTEGER NOT NULL,timeRemaining INTEGER,completed INTEGER NOT NULL)",
     []
   );
+export const webinarInit = () =>
+  queryHelper(
+    "CREATE TABLE IF NOT EXISTS webinar (id INTEGER PRIMARY KEY NOT NULL,courseId INTEGER NOT NULL,data TEXT NOT NULL,time INTEGER NOT NULL,date TEXT NOT NULL,description TEXT NOT NULL, url TEXT NOT NULL)"
+  );
+
+export const addWebinar = (courseId, data, time, date, description, url) =>
+  queryHelper(
+    "INSERT INTO webinar (courseId,data,time,date,description,url) VALUES(?,?,?,?,?,?)",
+    [courseId, data, time, date, description, url]
+  );
+export const fetchWebinar = (id) =>
+  queryHelper(`SELECT * FROM webinar WHERE courseId = ${id} `, []);
+
 export const blogInit = () =>
   queryHelper(
     "CREATE TABLE IF NOT EXISTS blog (id INTEGER PRIMARY KEY NOT NULL,courseId INTEGER NOT NULL,title TEXT NOT NULL,data TEXT NOT NULL)",
@@ -45,7 +58,7 @@ export const addCourse = (type, title, courseId) =>
 export const FetchCourse = () => queryHelper("SELECT * FROM course", []);
 
 export const FetchContent = (courseId) =>
-  queryHelper(`SELECT * FROM content WHERE courseId = ${courseId}`, []);
+  queryHelper(`SELECT * FROM content where courseId = ${courseId} `, []);
 
 export const AddContent = (courseId, videoId, name, timeRemaining, completed) =>
   queryHelper(

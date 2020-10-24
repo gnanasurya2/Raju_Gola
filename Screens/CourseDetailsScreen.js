@@ -31,14 +31,13 @@ const CourseDetailsScreen = (props) => {
       .getCurrentTime()
       .then((t) => (time = Math.floor(t)));
     await playerRef.current.getDuration().then((t) => (total = Math.floor(t)));
-    if (time !== undefined && total !== undefined) {
+    if (data.length && time !== undefined && total !== undefined) {
       const vId = data.filter((ele) => ele.videoId === videoId)[0].id;
       updateContent(vId, time, time === total ? 1 : 0);
     }
   };
   useEffect(() => {
     const goBack = props.navigation.addListener("tabPress", (e) => {
-      console.log("inside");
       e.preventDefault();
       props.navigation.naviagtion("Search", {
         screen: "Search",
@@ -46,6 +45,7 @@ const CourseDetailsScreen = (props) => {
     });
     return goBack;
   }, []);
+
   useEffect(() => {
     const unsubscribe = props.navigation.addListener("blur", async () => {
       await final();
@@ -92,13 +92,7 @@ const CourseDetailsScreen = (props) => {
         if (!res.rows.length) {
           for (let index = 0; index < resource.value.length; index++) {
             const ele = resource.value[index];
-            AddContent(
-              resource.id,
-              ele.videoId,
-              ele.name,
-              -1,
-              false
-            ).then((res) => console.log("success"));
+            AddContent(resource.id, ele.videoId, ele.name, -1, false);
           }
           fetchValues(resource.id);
         } else {

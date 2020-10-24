@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
           .auth()
           .signInWithEmailAndPassword(data.email, data.password)
           .then((data) => {
+            AsyncStorage.setItem("email", data.user.email);
             AsyncStorage.setItem("userToken", data.user.refreshToken);
             dispatch({ type: "SIGN_IN", token: data.user.refreshToken });
           })

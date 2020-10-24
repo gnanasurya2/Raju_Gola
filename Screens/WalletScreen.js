@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View, Platform, TextInput } from "react-native";
 import { PaymentsStripe as Stripe } from "expo-payments-stripe";
 import Button from "../components/Button";
-import Input from "../components/Input";
 import axois from "axios";
 import Colors from "../constants/Colors";
 import firebase from "../constants/Firebase";
+import AsyncStorage from "@react-native-community/async-storage";
 function testID(id) {
   return Platform.OS === "android"
     ? { accessible: true, accessibilityLabel: id }
@@ -48,40 +48,38 @@ export default class WalletScreen extends React.Component {
     try {
       this.setState({ loading: true, token: null });
       const token = await Stripe.paymentRequestWithCardFormAsync();
-      console.log(token.tokenId);
-      const email = firebase.auth().currentUser.email;
-      axois
-        .post(
-          "https://us-central1-raju-gola.cloudfunctions.net/completePaymentsWithStripe",
-          {
-            amount: parseInt(this.state.amount) * 100,
-            token: "tok_visa",
-            receipt_email: email,
-          }
-        )
-        .then((res) => {
-          console.log(res.data);
-          const email = firebase.auth().currentUser.email;
-          let amount;
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(email)
-            .get()
-            .then((doc) => {
-              amount = doc.data().amount;
-              firebase
-                .firestore()
-                .collection("users")
-                .doc(email)
-                .update({
-                  amount: amount + parseInt(this.state.amount),
-                });
-              this.setState({ loading: false, token, amount: "" });
-              this.amountRetreiver();
-            })
-            .catch((err) => console.log(err));
-        });
+      AsyncStorage.getItem("email", (_, email) => {
+        axois
+          .post(
+            "https://asia-south1-raju-gola.cloudfunctions.net/completePaymentsWithStripeAsia",
+            {
+              amount: parseInt(this.state.amount) * 100,
+              token: "tok_visa",
+              receipt_email: email,
+            }
+          )
+          .then((res) => {
+            const email = firebase.auth().currentUser.email;
+            let amount;
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(email)
+              .get()
+              .then((doc) => {
+                amount = doc.data().amount;
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(email)
+                  .update({
+                    amount: amount + parseInt(this.state.amount),
+                  });
+                this.setState({ loading: false, token, amount: "" });
+                this.amountRetreiver();
+              });
+          });
+      });
     } catch (error) {
       this.setState({ loading: false });
     }

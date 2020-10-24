@@ -12,6 +12,7 @@ const CourseCard = (props) => {
           width: "100%",
           flexDirection: "row",
           alignItems: "center",
+          marginBottom: 16,
         }}
       >
         <Image

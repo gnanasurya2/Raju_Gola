@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from "react";
 
 import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
 import Course from "../components/Course";
-import { FetchCourse } from "../database/database";
+import { FetchCourse, fetchWebinar } from "../database/database";
 
 const HomeScreen = (props) => {
   const [data, setData] = useState(null);
-  useEffect(() => {
-    const focusHandler = props.navigation.addListener("focus", () => {
-      console.log("focus");
-    });
-    return focusHandler;
-  }, []);
-  useEffect(() => {
+
+  const fetching = () => {
     FetchCourse().then((data) => {
       const rawData = data.rows._array;
-      setData([
-        [...rawData.filter((ele) => ele.type === "course")],
-        [...rawData.filter((ele) => ele.type === "webinar")],
-        [...rawData.filter((ele) => ele.type === "blog")],
-      ]);
+      if (rawData.length) {
+        setData([
+          [...rawData.filter((ele) => ele.type === "course")],
+          [...rawData.filter((ele) => ele.type === "webinar")],
+          [...rawData.filter((ele) => ele.type === "blog")],
+        ]);
+      } else {
+        setData(null);
+      }
     });
+  };
+  useEffect(() => {
+    fetching();
   }, []);
-
+  useEffect(() => {
+    const listener = props.navigation.addListener("focus", () => {
+      fetching();
+    });
+    return listener;
+  }, []);
   const pressHandler = (item) => {
     if (item.type === "course") {
       props.navigation.navigate("Search", {
@@ -33,17 +39,21 @@ const HomeScreen = (props) => {
         },
       });
     } else if (item.type === "webinar") {
-      props.navigation.navigate("Search", {
-        screen: "Webinar",
-        params: {
-          id: item.id,
-        },
+      fetchWebinar(item.courseId).then((data) => {
+        props.navigation.navigate("Search", {
+          screen: "Webinar",
+          params: {
+            data: { ...data.rows._array[0] },
+            bought: true,
+          },
+        });
       });
     } else {
       props.navigation.navigate("Search", {
         screen: "Blog",
         params: {
           id: item.id,
+          webinar: true,
         },
       });
     }
@@ -129,7 +139,11 @@ const HomeScreen = (props) => {
             </>
           ) : null}
         </>
-      ) : null}
+      ) : (
+        <Text style={{ marginTop: "80%", fontSize: 20, fontWeight: "bold" }}>
+          No Content Available
+        </Text>
+      )}
     </ScrollView>
   );
 };
