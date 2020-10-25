@@ -11,7 +11,7 @@ export default function App() {
   const loading = async () => {
     if (!ready) {
       await SplashScreen.preventAutoHideAsync();
-      await init().catch((e) => console.log(e));
+      await init();
       await contentInit();
       await webinarInit();
       AsyncStorage.setItem("firstTime", "false");

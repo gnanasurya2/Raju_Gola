@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 import * as ScreenOrientation from "expo-screen-orientation";
 
@@ -35,7 +35,9 @@ const Video = (props) => {
           ref={props.playerRef}
           play={false}
         />
-      ) : null}
+      ) : (
+        <ActivityIndicator size="large" color="blue" />
+      )}
     </View>
   );
 };

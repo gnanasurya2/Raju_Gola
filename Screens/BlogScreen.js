@@ -6,10 +6,9 @@ import { FetchContent, addCourse, AddContent } from "../database/database";
 const BlogScreen = (props) => {
   const { data } = props.route.params;
   useEffect(() => {
-    FetchContent(data.id).then((data) => {
-      if (!data.rows.length) {
+    FetchContent(data.id).then((docs) => {
+      if (!docs.rows.length) {
         addCourse("blog", data.title, data.id);
-        AddContent(data.id);
       }
     });
   }, []);

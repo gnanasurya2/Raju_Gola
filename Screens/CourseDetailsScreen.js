@@ -117,7 +117,7 @@ const CourseDetailsScreen = (props) => {
       setData(newData);
       updateContent(data[index].id, -1, 1);
       updateCourse(
-        Math.floor((index / data.length) * 100),
+        Math.floor(((index + 1) / data.length) * 100),
         data[index].courseId
       );
       setCurrentIndex((state) => state + 1);

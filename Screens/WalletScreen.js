@@ -22,23 +22,23 @@ export default class WalletScreen extends React.Component {
     isValid: true,
   };
   amountRetreiver = () => {
-    const email = firebase.auth().currentUser.email;
-    firebase
-      .firestore()
-      .collection("users")
-      .doc(email)
-      .get()
-      .then((doc) => this.setState({ currentAmount: doc.data().amount }));
+    AsyncStorage.getItem("email", (_, email) => {
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(email)
+        .get()
+        .then((doc) => this.setState({ currentAmount: doc.data().amount }));
+    });
   };
   componentDidMount() {
     this.amountRetreiver();
-  }
-  UNSAFE_componentWillMount() {
     Stripe.setOptionsAsync({
       publishableKey: "pk_test_M315xbWEvSQjt7B8ZJYzuipC",
       androidPayMode: "test",
     });
   }
+
   currentuser = () => {};
   handleCardPayPress = async () => {
     if (!Number.isInteger(parseInt(this.state.amount))) {
@@ -59,7 +59,6 @@ export default class WalletScreen extends React.Component {
             }
           )
           .then((res) => {
-            const email = firebase.auth().currentUser.email;
             let amount;
             firebase
               .firestore()
